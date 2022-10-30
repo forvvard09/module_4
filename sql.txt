@@ -1,0 +1,85 @@
+--Создание таблицы
+--create table library (id serial primary key, name varchar(100));
+
+--Вставка данных
+--INSERT INTO library (name) VALUES ('Научная фантастика');
+--insert into library (name) values ('Публицистика');
+
+--Выбрать все данные из таблицы library
+-- SELECT *
+-- FROM library;
+
+--Создать таблицы со связью (foreign key) к таблицe library
+--create table book (id serial primary key, name varchar(100), id_genre int references library(id));
+-- insert into book(name, id_genre) values ('Град обреченный', 1);
+-- insert into book(name, id_genre) values ('Хромая судьба', 1);
+
+--Попытка вставить в таблицу запись с несуществующим foreign key
+-- insert into book(name, id_genre) values ('Любая книга', 3);
+
+--Вставка с пустым foreign key
+--insert into book(name) values ('Газета');
+
+--Вставка в library
+--insert into library (name) values ('Газета');
+
+--Изменение записи
+-- update book set id_genre = 3
+-- where id = 4;
+
+--Объединение двух таблиц book и library на основе id_genre и id
+-- select b.name as book_name, l.name as genre_name
+-- from book as b inner join library as l on b.id_genre = l.id;
+
+--Объединение двух таблиц book и library на основе book name и library name
+-- select b.name as book_name, l.name as genre_name
+-- from book as b inner join library as l on b.name = l.name;
+
+-- Левосторонее объединение (выбор только тех записей, которые имеют жанр из таблицы library)
+-- select b.name as book_name, l.name as genre_name
+-- from book as b left join library as l on b.id_genre = l.id
+-- where l.id is not null;
+
+--Изменение таблицы (вставка новой колонки)
+--alter table book add column page int;
+
+--Присваиваем значение null всем в book
+--update book set page = null;
+
+--Создание таблицы с количеством страниц для каждой книги
+-- create table book_pages (id serial primary key, page int, id_book int references book(id));
+-- insert into book_pages (page, id_book) values(200, 1);
+-- insert into book_pages (page, id_book) values(100, 2);
+-- insert into book_pages (page, id_book) values(1, 4);
+-- insert into book_pages (page, id_book) values(10, 5);
+-- insert into book_pages (page, id_book) values(15, 5);
+
+-- Изменение book - замена значений в book page из book_pages
+-- update book set page = book_pages.page
+-- from book_pages 
+-- where book.id = book_pages.id_book
+
+-- Сортировка по значению
+-- select * 
+-- from book
+-- order by name desc;
+
+-- Аггрегатные функции
+-- select SUM(page) as sum_pages, AVG(page) as avg_pages, MIN(page) as min_pages, 
+-- MAX(page) as max_pages, COUNT(*) as count_books
+-- from book;
+
+-- Количество страниц для каждого жанра
+-- select l.name, SUM(b.page)
+-- from book as b inner join library as l on b.id_genre = l.id
+-- group by l.name;
+
+-- Количество страниц для каждого жанра (включая жанры, по которым нет книг)
+-- select l.name, SUM(case when b.page is null then 0 else b.page end)
+-- from book as b right join library as l on b.id_genre = l.id
+-- group by l.name;
+
+--Удаление таблиц
+--drop table book_pages
+--drop table book
+--drop table library
