@@ -1,0 +1,70 @@
+--1. Создать таблицу отдел(department), колонки: id, name, isProfit(приносит прибыль - да/нет)
+CREATE TABLE department(id SERIAL PRIMARY KEY, name VARCHAR(100) NOT NULL, isProfit BOOLEAN NOT NULL, UNIQUE(name));
+
+--2. Вставить туда:
+--Бухгалтерия, нет
+--Кредитный отдел, да
+--Отдел продаж, да
+--Правление, нет
+INSERT INTO department(name, isProfit) VALUES('Бухгалтерия', false);
+INSERT INTO department(name, isProfit) VALUES('Кредитный отдел', true);
+INSERT INTO department(name, isProfit) VALUES('Отдел продаж', true);
+INSERT INTO department(name, isProfit) VALUES('Правление', false);
+
+--3. Создать таблицу работник(employee), колонки: id, full_name (фио), salary, department_id (связь с отделом)
+CREATE TABLE employee(id SERIAL PRIMARY KEY, full_name VARCHAR(150) NOT NULL, salary INT NOT NULL, department_id INT REFERENCES department(id), UNIQUE(full_name));
+
+--4. Вставить в таблицу работник:
+--Петров Иван, 30000, отдел продаж(подумать, какое значение нужно вставлять)
+--Иванова Наталья, 50000, Бухгалтерия
+--Мирских Петр, 100000, Правление
+--Улюкаев Владимир, 200000, Правление
+--Заморский Виктор, 70000, Кредитный Отдел
+INSERT INTO employee(full_name, salary, department_id) VALUES('Петров Иван', 30000, (SELECT ID FROM department where name ILIKE '%отдел продаж%'));
+INSERT INTO employee(full_name, salary, department_id) VALUES('Иванова Наталья', 50000, (SELECT ID FROM department where name ILIKE '%Бухгалтерия%'));
+INSERT INTO employee(full_name, salary, department_id) VALUES('Мирских Петр', 100000, (SELECT ID FROM department where name ILIKE '%Правление%'));
+INSERT INTO employee(full_name, salary, department_id) VALUES('Улюкаев Владимир', 200000, (SELECT ID FROM department where name ILIKE '%Правление%'));
+INSERT INTO employee(full_name, salary, department_id) VALUES('Заморский Виктор', 70000, (SELECT ID FROM department where name ILIKE '%Кредитный Отдел%'));
+
+--5. Вывести на экран всех сотрудников Правления - вывод: все поля employee
+SELECT emp.*   FROM employee as emp
+LEFT JOIN department as dep ON emp.department_id = dep.id WHERE dep.name ILIKE '%Правление%';
+
+--6. Вывести на экран сумму всех зарплат сотрудников - вывод: общая сумма всех зарплат
+SELECT SUM(salary) as "Сумма всех зарплат" FROM employee;
+
+--7. Вывести на экран фио сотрудника, является ли он сотрудником прибыльного отдела - вывод: фио, принадлежит к прибыльному отделу
+SELECT emp.full_name, (case when dep.isProfit = true then 'Да' else 'Нет' end) AS "Сотрудник прибыльного отдела" from employee as emp
+LEFT JOIN department as dep ON emp.department_id = dep.id;
+
+--8. Вывести на экран только тех сотрудников, которые получают от 10_000 до 100_000 (включительно) - вывод: все поля employee
+SELECT * from employee WHERE salary BETWEEN 10000 AND 100000;
+
+--9. Удалить Мирского Петра из таблицы
+DELETE FROM employee
+WHERE full_name ILIKE '%Мирских Петр%';
+
+--10. Поменять название Кредитного отдела на депозитный и поменять у него статус "приносит прибыль" на нет
+UPDATE public.department
+SET name='Депозитный отдел', isprofit=false
+WHERE id = (SELECT ID FROM department where name ILIKE '%Кредитный Отдел%');
+
+--11. Вывести всех сотрудников содержащих "иван" (в независимости от регистра) - вывод: все поля employee
+SELECT * FROM employee WHERE full_name ILIKE '%иван%';
+
+--12. Вывести среднюю зарплату по отделам - вывод: отдел, средняя зарплата
+SELECT dep.name AS "Отдел", AVG(emp.salary::money::numeric::float8) as "Средняя зарплата" from employee AS emp
+RIGHT JOIN department AS dep on emp.department_id = dep.id GROUP BY dep.name;
+
+13.Удалить таблицы employee, department
+DROP TABLE employee;
+DROP TABLE department;
+
+
+
+
+
+
+
+
+
