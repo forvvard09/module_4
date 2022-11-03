@@ -1,0 +1,2 @@
+create table if not exists library (id serial primary key, name varchar not null unique);
+create table if not exists book (id serial primary key, name varchar not null unique, id_genre int references library(id));
