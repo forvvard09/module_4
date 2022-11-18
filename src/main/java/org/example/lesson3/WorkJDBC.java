@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
 
 public class WorkJDBC {
     public static void main(String[] args) throws SQLException {
-        String url = "jdbc:postgresql://localhost:5432/postgres";
+        String url = "jdbc:postgresql://localhost:5432/demo";
         String user = "postgres";
-        String password = "terrrr";
+        String password = "postgres";
         try (Connection connection = DriverManager.getConnection(url, user, password);
              Statement statement = connection.createStatement();
         ) {

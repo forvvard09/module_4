@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import static org.homeworks.hw02.analysisHW02.SqlUtil.*;
+
 public class Main {
 
     public static void main(String[] args) throws SQLException {
@@ -38,20 +40,6 @@ public class Main {
         }
     }
 
-    public static String readSqlFile(String filename) {
-        InputStream resource = WorkJDBC.class.getClassLoader().getResourceAsStream(filename);
-        return new BufferedReader(new InputStreamReader(resource)).lines().collect(Collectors.joining(""));
-    }
-
-    public static String getRandomName() {
-        final List<String> testNamesLast = Arrays.asList("Alex", "Vlad", "John", "Anna", "Ivan", "Bob", "Oleg", "Yakov", "Arsen", "Fedor", "Nikol", "Artem");
-        final List<String> testNameSurname = Arrays.asList("Alekseev", "Vladimirov", "Yogov", "Annaniev", "Ivanov", "Bobov", "Egorov", "Yakovlev", "Zaharyan", "Olgin", "Nikolaev", "Artemov");
-        return String.format("%s %s", testNameSurname.get(new Random().nextInt(testNameSurname.size())), testNamesLast.get(new Random().nextInt(testNamesLast.size())));
-    }
-
-    public static String getRandomPsw() {
-        return String.format("%s%s", "pas", new Random().nextInt(100000));
-    }
 
     public static boolean createRandomUser(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("INSERT INTO  USERS (name, pasword, created_at) VALUES (?, ?, ?)");
